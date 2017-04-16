@@ -2,7 +2,7 @@ var topics = ["Trending", "My Little Pony", "Steven Universe", "One Punch Man", 
 						"Programming", "Cats", "Dogs", "Family Guy", "American Dad", "The Simpsons", "Futurama", "Memes", 
 						"Erick Rivas", "Seth Gibson", "Ke Yang"];
 
-var queryURL = "http://api.giphy.com/v1/gifs/search?q=";
+var queryURL = "https://api.giphy.com/v1/gifs/search?q=";
 var querySearchTerm = "";
 var queryURLEnding = "&api_key=dc6zaTOxFJmzC&limit=10";
 const MAX_NUM_ITEMS_PER_ROW = 12;
