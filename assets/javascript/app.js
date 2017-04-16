@@ -1,5 +1,6 @@
-var initialTopics = ["My Little Pony", "Steven Universe", "One Punch Man", "Markiplier", "Frozen", "Zootopia", "Anime",
-						"Programming", "Cats", "Dogs", "Family Guy", "American Dad", "The Simpsons", "Futurama", "Memes"];
+var topics = ["Trending", "My Little Pony", "Steven Universe", "One Punch Man", "Markiplier", "Frozen", "Zootopia", "Anime",
+						"Programming", "Cats", "Dogs", "Family Guy", "American Dad", "The Simpsons", "Futurama", "Memes", 
+						"Erick Rivas", "Seth Gibson", "Ke Yang"];
 
 var queryURL = "http://api.giphy.com/v1/gifs/search?q=";
 var querySearchTerm = "";
@@ -29,12 +30,10 @@ $(document).on("click",".gif",function()
 function initialize()
 {
 	var resultsSection = $("#search-results");
-	console.log(resultsSection);
 	var newDiv = $("<div>");
 	newDiv.attr("class","results row");
 	var divCount = newDiv.length;
-	console.log(divCount);
-	for(var i = 0; i < initialTopics.length; i++)
+	for(var i = 0; i < topics.length; i++)
 	{
 		// if there are too many spans on the row
 		if(newDiv.children().length == MAX_NUM_ITEMS_PER_ROW)
@@ -48,18 +47,49 @@ function initialize()
 		// make a new span for the topic
 		var newSpan = $("<span>");
 		newSpan.attr("class","bg-info result");
-		newSpan.attr("data-name", initialTopics[i]);
-		newSpan.html(initialTopics[i]);
+		newSpan.attr("data-name", topics[i]);
+		newSpan.html(topics[i]);
 		newDiv.append(newSpan);
 	}
 
 	resultsSection.append(newDiv);
+
+	// add a listener to the submit button
+	$("#submit-btn").on("click", function(event)
+	{
+		event.preventDefault();
+		var resultsSection = $("#search-results");
+
+		// create the new topic
+		var newTopic = $("#search-bar").val().trim();
+		topics.push(newTopic);
+		var newSpan = $("<span>");
+		newSpan.attr("class","bg-info result");
+		newSpan.attr("data-name", newTopic);
+		newSpan.html(newTopic);
+
+		var oldDiv = resultsSection.children().last();
+
+		// if the previous last div is full, then make a new one
+		if(oldDiv.children().length == MAX_NUM_ITEMS_PER_ROW)
+		{
+			var newDiv = $("<div>");
+			newDiv.attr("class","results row");
+			newDiv.append(newSpan);
+			resultsSection.append(newDiv);
+		}
+
+		// otherwise just add it to the old div
+		else
+		{
+			oldDiv.append(newSpan);
+		}
+	});
 }
 
 // turn a string with spaces into a string with +'s
 function parseString(string)
 {
-	console.log(string)
 	var parsedVersion = "";
 	for(var i = 0; i < string.length; i++)
 	{
@@ -68,13 +98,24 @@ function parseString(string)
 		else
 			parsedVersion += "+";
 	}
-	console.log(parsedVersion);
 	return parsedVersion;
 }
 
 // display the Gifs onscreen
 function displayGifs()
 {
+
+	// let the user know which topic is selected
+	var spans = $(".results").children();
+
+	// because it returns the element as a regular element, use normal javascript to change it
+	for(var i = 0; i < spans.length; i++)
+	{
+		spans[i].className = "bg-info result";
+	}
+
+	$(this).attr("class", "bg-primary result");
+
 	// get the full query url
 	var searchTerm = $(this).data("name");
 	querySearchTerm = parseString(searchTerm);
@@ -84,7 +125,6 @@ function displayGifs()
 		method : "GET"
 	}).done(function(response)
 	{
-		console.log(response);
 		// clear the main content
 		// testing this to see if it will erase the event listener for starting and stopping the gifs
 		var mainContent = $("#mainContent");
@@ -93,6 +133,7 @@ function displayGifs()
 		// and display each gif
 		for(var i = 0; i < response.data.length; i++)
 		{
+			var newGifDiv = $("<div>");
 			var newImg = $("<img>");
 			// so that I don't have to keep asking, I'm just storing each link in a data-attribute
 			var stillLink = response.data[i].images.fixed_height_still.url;
@@ -102,10 +143,12 @@ function displayGifs()
 			newImg.data("isMoving", false);
 			newImg.attr("src", stillLink);
 			newImg.attr("class", "gif");
-			mainContent.append(newImg);
+			newGifDiv.attr("class", "imgBlock");
+			var width = parseInt(response.data[i].images.fixed_height.width) + 20;
+			newGifDiv.css("width", width.toString() + "px");
+			newGifDiv.html("<p>Rating: " + response.data[i].rating.toUpperCase() + "</p>");
+			newGifDiv.prepend(newImg);
+			mainContent.append(newGifDiv);
 		}
-		// var imgLink = response.data[0].images.fixed_height_small.url;
-		// console.log(imgLink);
-	})
+	});
 }
-

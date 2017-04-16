@@ -30,3 +30,11 @@ header
 	background-color: white;
 	margin: 10px;
 }
+
+.imgBlock
+{
+	background-color: #FFAAAA;
+	text-align: center;
+	margin: 10px;
+	float: left;
+}
