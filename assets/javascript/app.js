@@ -6,6 +6,8 @@ var queryURL = "https://api.giphy.com/v1/gifs/search?q=";
 var querySearchTerm = "";
 var queryURLEnding = "&api_key=dc6zaTOxFJmzC&limit=10";
 const MAX_NUM_ITEMS_PER_ROW = 12;
+const MAX_CHARS_PER_ROW = 100;
+var numChars = 0;
 
 // initialization and event listeners
 $(document).ready(initialize);
@@ -36,15 +38,18 @@ function initialize()
 	for(var i = 0; i < topics.length; i++)
 	{
 		// if there are too many spans on the row
-		if(newDiv.children().length == MAX_NUM_ITEMS_PER_ROW)
+		if(newDiv.children().length == MAX_NUM_ITEMS_PER_ROW || numChars >= MAX_CHARS_PER_ROW)
 		{
 			// add it and make a new one
 			resultsSection.append(newDiv);
 			newDiv = $("<div>");
 			newDiv.attr("class","results row");
+			numChars = 0;
 		}
 
 		// make a new span for the topic
+		numChars += topics[i].length;
+		console.log(numChars);
 		var newSpan = $("<span>");
 		newSpan.attr("class","bg-info result");
 		newSpan.attr("data-name", topics[i]);
@@ -63,6 +68,8 @@ function initialize()
 		// create the new topic
 		var newTopic = $("#search-bar").val().trim();
 		topics.push(newTopic);
+		numChars += newTopic.length;
+		console.log(numChars);
 		var newSpan = $("<span>");
 		newSpan.attr("class","bg-info result");
 		newSpan.attr("data-name", newTopic);
@@ -71,8 +78,9 @@ function initialize()
 		var oldDiv = resultsSection.children().last();
 
 		// if the previous last div is full, then make a new one
-		if(oldDiv.children().length == MAX_NUM_ITEMS_PER_ROW)
+		if(oldDiv.children().length == MAX_NUM_ITEMS_PER_ROW || numChars >= MAX_CHARS_PER_ROW)
 		{
+			numChars = newTopic.length;
 			var newDiv = $("<div>");
 			newDiv.attr("class","results row");
 			newDiv.append(newSpan);
